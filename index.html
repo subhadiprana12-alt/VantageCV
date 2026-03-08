@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pro Resume Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Raleway:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<div id="formView">
+  <div class="ui-header">
+    <span class="icon">📄</span>
+    <h1>Pro Resume Builder</h1>
+    <p>Fill your details — get a beautiful resume instantly ✨</p>
+  </div>
+
+  <div class="card">
+    <div class="prog" id="prog"></div>
+
+    <!-- STEP 0: Purpose -->
+    <div class="panel active" id="p0">
+      <div class="step-title">🎯 Resume Purpose</div>
+      <div class="field">
+        <label>What is this resume for? *</label>
+        <div class="rg">
+          <label class="rc"><input type="radio" name="purpose" value="College / Internship" checked onchange="updateLevelOptions()"/><span>🎓 College / Internship</span></label>
+          <label class="rc"><input type="radio" name="purpose" value="Fresher Job" onchange="updateLevelOptions()"/><span>💼 Fresher Job</span></label>
+          <label class="rc"><input type="radio" name="purpose" value="Campus Placement" onchange="updateLevelOptions()"/><span>🏢 Campus Placement</span></label>
+          <label class="rc"><input type="radio" name="purpose" value="Professional Job" onchange="updateLevelOptions()"/><span>🚀 Professional</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Experience Level *</label>
+        <select id="level"></select>
+      </div>
+      <div class="field">
+        <label>Degree / Job Role *</label>
+        <input id="jobRole" placeholder="e.g. B.Tech CSE, Frontend Developer, Data Analyst"/>
+      </div>
+      <div class="br"><button class="btn bpr" onclick="next()">Next →</button></div>
+    </div>
+
+    <!-- STEP 1: Personal Info + Photo -->
+    <div class="panel" id="p1">
+      <div class="step-title">👤 Personal Info & Photo</div>
+      <div class="photo-wrap">
+        <div class="photo-circle" id="photoPreview" onclick="document.getElementById('photoInput').click()">
+          <div class="photo-ph"><span>📷</span><span>Upload Photo</span></div>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(event)"/>
+        <p class="hint" style="text-align:center;margin-top:8px">Passport-style photo recommended</p>
+      </div>
+      <div class="field"><label>Full Name *</label><input id="name" placeholder="Arjun Chatterjee"/></div>
+      <div class="field"><label>Degree / Job Title (shown under name) *</label><input id="jobTitle" placeholder="B.Tech in Computer Science & Engineering"/></div>
+      <div class="g2">
+        <div class="field"><label>Phone</label><input id="phone" placeholder="+91 98304 56789"/></div>
+        <div class="field"><label>City / Address</label><input id="location" placeholder="Kolkata, West Bengal - 700091"/></div>
+      </div>
+      <div class="field"><label>Email *</label><input type="email" id="email" placeholder="arjun.chatterjee@gmail.com"/></div>
+      <div class="field"><label>LinkedIn (optional)</label><input id="linkedin" placeholder="linkedin.com/in/arjunchatterjee"/></div>
+      <div class="field"><label>Coursera Profile (optional)</label><input id="coursera" placeholder="coursera.org/user/yourprofile"/></div>
+      <div class="br">
+        <button class="btn bbk" onclick="back()">← Back</button>
+        <button class="btn bpr" onclick="next()">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Profile + Languages + Hobbies -->
+    <div class="panel" id="p2">
+      <div class="step-title">📝 Profile & More</div>
+      <div class="field">
+        <label>Profile Summary *</label>
+        <textarea id="profile" rows="6" placeholder="Passionate B.Tech CSE student with strong foundation in full-stack development and problem solving. Experienced in building real-world web applications using React and Node.js. Seeking internship to apply skills in a professional environment."></textarea>
+        <div class="hint">Write 3–5 sentences about yourself</div>
+      </div>
+      <div class="field">
+        <label>Languages Known</label>
+        <textarea id="languages" rows="3" placeholder="Bengali: Native&#10;English: Proficient&#10;Hindi: Conversational"></textarea>
+        <div class="hint">Each language on a new line — format: Language: Level</div>
+      </div>
+      <div class="field">
+        <label>Hobbies / Interests (optional)</label>
+        <input id="hobbies" placeholder="Cricket, Music, Reading, Photography"/>
+        <div class="hint">Separate with commas</div>
+      </div>
+      <div class="br">
+        <button class="btn bbk" onclick="back()">← Back</button>
+        <button class="btn bpr" onclick="next()">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Education -->
+    <div class="panel" id="p3">
+      <div class="step-title">🎓 Educational Qualification</div>
+      <div class="badge">🏛 College / University</div>
+      <div class="field"><label>College Name *</label><input id="college" placeholder="Heritage Institute of Technology, Kolkata"/></div>
+      <div class="field"><label>Degree & Branch *</label><input id="degree" placeholder="B.Tech Computer Science & Engineering"/></div>
+      <div class="g2">
+        <div class="field"><label>Year</label><input id="gradYear" placeholder="2022 - 2026"/></div>
+        <div class="field"><label>CGPA / Percentage</label><input id="gpa" placeholder="8.7 CGPA"/></div>
+      </div>
+      <div class="badge">📘 Class XII</div>
+      <div class="g2">
+        <div class="field"><label>Year</label><input id="year12" placeholder="2022"/></div>
+        <div class="field"><label>Percentage</label><input id="pct12" placeholder="86.4%"/></div>
+      </div>
+      <div class="field"><label>School Name</label><input id="school12" placeholder="South Point High School, Kolkata"/></div>
+      <div class="badge">📗 Class X</div>
+      <div class="g2">
+        <div class="field"><label>Year</label><input id="year10" placeholder="2020"/></div>
+        <div class="field"><label>Percentage</label><input id="pct10" placeholder="91.2%"/></div>
+      </div>
+      <div class="field"><label>School Name</label><input id="school10" placeholder="South Point High School, Kolkata"/></div>
+      <div class="br">
+        <button class="btn bbk" onclick="back()">← Back</button>
+        <button class="btn bpr" onclick="next()">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Skills & Certifications -->
+    <div class="panel" id="p4">
+      <div class="step-title">🛠 Skills & Certifications</div>
+      <div class="field">
+        <label>Technical Skills *</label>
+        <textarea id="techSkills" placeholder="JavaScript, React.js, Node.js, Python, MySQL, Git & GitHub, REST APIs"></textarea>
+        <div class="hint">Separate each skill with a comma</div>
+      </div>
+      <div class="field">
+        <label>Soft Skills</label>
+        <textarea id="softSkills" placeholder="Communication, Teamwork, Problem Solving, Leadership, Time Management"></textarea>
+        <div class="hint">Separate each skill with a comma</div>
+      </div>
+      <div class="field">
+        <label>Certifications</label>
+        <textarea id="certs" placeholder="NPTEL - The Joy of Computing using Python&#10;Coursera: Full Stack Web Development with React&#10;Google: Foundations of Project Management&#10;Udemy: Complete JavaScript Bootcamp 2024"></textarea>
+        <div class="hint">Write each certification on a new line</div>
+      </div>
+      <div class="br">
+        <button class="btn bbk" onclick="back()">← Back</button>
+        <button class="btn bpr" onclick="next()">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Experience & Projects -->
+    <div class="panel" id="p5">
+      <div class="step-title">💼 Experience & Projects</div>
+      <div class="field">
+        <label>Work Experience / Internships (optional)</label>
+        <textarea id="experience" placeholder="Frontend Intern at Infosys BPM (May-Aug 2024): Built responsive UI components using React.js&#10;Collaborated with backend team to integrate REST APIs and improve page load speed by 35%"></textarea>
+        <div class="hint">Format: Title at Company (Date): description — leave blank if none</div>
+      </div>
+      <div class="field">
+        <label>Projects (optional)</label>
+        <textarea id="projects" placeholder="College ERP Portal using React & Node.js: Manages student data, attendance and results for 2000+ students&#10;Weather Dashboard using JavaScript & OpenWeather API: Displays real-time forecast with interactive charts"></textarea>
+        <div class="hint">Write each project on a new line</div>
+      </div>
+      <div class="field">
+        <label>Achievements (optional)</label>
+        <textarea id="achievements" placeholder="Winner - Smart India Hackathon 2024&#10;Best Project Award - College Tech Fest 2023&#10;NSS Volunteer - 200+ hours of community service"></textarea>
+        <div class="hint">Write each achievement on a new line</div>
+      </div>
+      <div class="br">
+        <button class="btn bbk" onclick="back()">← Back</button>
+        <button class="btn bpr" onclick="buildResume()">✨ Build My Resume</button>
+      </div>
+    </div>
+  </div>
+  <div class="ui-footer">Pro Resume Builder · No API needed · 100% Free 🎓</div>
+</div>
+
+<!-- RESUME VIEW -->
+<div id="resumeView" style="display:none">
+  <div class="action-bar" id="actionBar">
+    <button class="abtn ab-edit" onclick="restart()">✏️ Edit Resume</button>
+    <button class="abtn ab-print" onclick="window.print()">🖨 Print</button>
+    <button class="abtn ab-pdf" id="pdfBtn" onclick="downloadPDF()">⬇️ Download PDF</button>
+  </div>
+
+  <div class="resume-outer">
+    <div class="resume" id="resume">
+
+      <div class="r-topbar"></div>
+
+      <div class="r-hero">
+        <div class="r-photo" id="rPhoto"><span style="font-size:56px">👤</span></div>
+        <div class="r-nameblock">
+          <div class="r-name" id="rName">YOUR NAME</div>
+          <div class="r-role" id="rRole">JOB TITLE</div>
+          <div class="r-nameline"></div>
+        </div>
+      </div>
+
+      <div class="r-body">
+
+        <!-- LEFT SIDEBAR -->
+        <div class="r-left">
+
+          <div class="r-lsec">
+            <div class="r-lsec-title">Contact</div>
+            <div class="r-lsec-line"></div>
+            <div class="r-contacts" id="rContact"></div>
+          </div>
+
+          <div class="r-lsec">
+            <div class="r-lsec-title">Educational<br/>Qualification</div>
+            <div class="r-lsec-line"></div>
+            <div class="r-edus" id="rEdu"></div>
+          </div>
+
+          <div class="r-lsec" id="rLangSec">
+            <div class="r-lsec-title">Languages</div>
+            <div class="r-lsec-line"></div>
+            <div class="r-lang-list" id="rLangs"></div>
+          </div>
+
+          <div class="r-lsec" id="rHobbySec">
+            <div class="r-lsec-title">Hobbies</div>
+            <div class="r-lsec-line"></div>
+            <div class="r-hobby-list" id="rHobbies"></div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT MAIN -->
+        <div class="r-right">
+
+          <div class="r-msec">
+            <div class="r-mtitle">PROFILE</div>
+            <div class="r-mline"></div>
+            <p class="r-profile-text" id="rProfile"></p>
+          </div>
+
+          <!-- Technical + Soft Skills side by side -->
+          <div class="r-twocol">
+            <div>
+              <div class="r-msec">
+                <div class="r-mtitle">TECHNICAL SKILLS</div>
+                <div class="r-mline"></div>
+                <ul class="r-blist" id="rTechSkills"></ul>
+              </div>
+            </div>
+            <div>
+              <div class="r-msec" id="rSoftSec">
+                <div class="r-mtitle">SOFT SKILLS</div>
+                <div class="r-mline"></div>
+                <ul class="r-blist" id="rSoftSkills"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="r-msec" id="rCertSec">
+            <div class="r-mtitle">CERTIFICATIONS</div>
+            <div class="r-mline"></div>
+            <ol class="r-nlist" id="rCerts"></ol>
+          </div>
+
+          <div class="r-msec" id="rExpSec" style="display:none">
+            <div class="r-mtitle">WORK EXPERIENCE</div>
+            <div class="r-mline"></div>
+            <div id="rExp"></div>
+          </div>
+
+          <div class="r-msec" id="rProjSec" style="display:none">
+            <div class="r-mtitle">PROJECTS</div>
+            <div class="r-mline"></div>
+            <ul class="r-blist" id="rProj"></ul>
+          </div>
+
+          <div class="r-msec" id="rAchSec" style="display:none">
+            <div class="r-mtitle">ACHIEVEMENTS</div>
+            <div class="r-mline"></div>
+            <ul class="r-blist" id="rAch"></ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="r-bottom"></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
